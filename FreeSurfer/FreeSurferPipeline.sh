@@ -78,6 +78,10 @@ show_tool_versions()
 	which tkregister
 	tkregister -version
 
+	log_Msg "Showing tkregister2 version"
+	which tkregister2
+	tkregister2 -version
+
 	# Show mri_concatenate_lta version
 	log_Msg "Showing mri_concatenate_lta version"
 	which mri_concatenate_lta
@@ -778,7 +782,12 @@ main()
 		fi
 
 		log_Msg "...Create a registration between the original conformed space and the rawavg space"
-		tkregister_cmd="tkregister"
+		if [[ $(( ${freesurfer_primary_version} )) -ge 7 ]]; then
+			tkreg="tkregister2"
+		else
+			tkreg="tkregister"
+		fi
+		tkregister_cmd="${tkreg}"
 		tkregister_cmd+=" --mov orig.mgz"
 		tkregister_cmd+=" --targ rawavg.mgz"
 		tkregister_cmd+=" --regheader"
@@ -811,7 +820,7 @@ main()
 		fi
 
 		log_Msg "...Convert to FSL format"
-		tkregister_cmd="tkregister"
+		tkregister_cmd="${tkreg}"
 		tkregister_cmd+=" --mov orig/${t2_or_flair}raw.mgz"
 		tkregister_cmd+=" --targ rawavg.mgz"
 		tkregister_cmd+=" --reg Q.lta"
